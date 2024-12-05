@@ -107,6 +107,7 @@
         <module>utils</module>
         <module>fault.manager</module>
         <module>fault.manager.impl</module>
+        <module>standalone-integration</module>
     </modules>
 
     <properties>

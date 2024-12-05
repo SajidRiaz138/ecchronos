@@ -115,7 +115,24 @@ public class DistributedJmxConnectionProviderImpl implements DistributedJmxConne
     @Override
     public JMXConnector getJmxConnector(final UUID nodeID)
     {
-        return myJMXConnections.get(nodeID);
+        JMXConnector connector =  myJMXConnections.get(nodeID);
+        if(isConnected(nodeID))
+        {
+            return connector;
+        }
+        Node node = myNativeConnectionProvider.getNodes().get(nodeID);
+        try
+        {
+            LOG.info("Attempting to create JMX connection with node {}", node.getHostId());
+            myDistributedJmxBuilder.reconnect(node);
+            LOG.info("Connection created successfully with node {}", node.getHostId());
+            connector = myJMXConnections.get(nodeID);
+        }
+        catch (EcChronosException e)
+        {
+            LOG.error("Failed to connect to node {}: {}", node.getHostId(), e.getMessage());
+        }
+        return connector;
     }
 
     /**
